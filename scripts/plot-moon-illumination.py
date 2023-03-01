@@ -1,3 +1,17 @@
+from argparse import ArgumentParser
+
+from matplotlib import pyplot as plt
+
+from config import Config
+
+parser = ArgumentParser()
+parser.add_argument("-o", "--output_path", required=True)
+parser.add_argument("-c", "--config", required=True)
+args = parser.parse_args()
+
+config = Config.parse_file(args.config)
+
+
 def main():
     fig, ax = plt.subplots()
 
@@ -41,3 +55,7 @@ def main():
     ax.legend()
 
     fig.savefig(outdir / f"{config.source}_ped_charge_stddev.pdf")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,8 +1,7 @@
 from argparse import ArgumentParser
 
-from matplotlib import pyplot as plt
-
 from config import Config
+from matplotlib import pyplot as plt
 
 parser = ArgumentParser()
 parser.add_argument("-o", "--output_path", required=True)

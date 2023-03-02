@@ -132,12 +132,12 @@ if __name__ == "__main__":
     ped_std = runsummary["ped_charge_stddev"]
 
     mask_pedestal_charge = get_mask(
-        ped_std[mask],
+        ped_std,
         ge=config.pedestal_ll,
         le=config.pedestal_ul,
     )
 
-    runsummary["mask_pedestal_charge"] = mask_pedestal_charge
+    runsummary["mask_pedestal_charge"] = mask_pedestal_charge & mask
     mask = runsummary["mask_pedestal_charge"] & mask
 
     after_pedestal_charge = np.count_nonzero(mask)
@@ -201,3 +201,5 @@ if __name__ == "__main__":
     mask = np.in1d(runs["Run ID"], runsummary["runnumber"][mask])
 
     runs[mask].to_csv(args.output_path, index=False)
+
+    runsummary.write(args.datacheck_path, overwrite=True)

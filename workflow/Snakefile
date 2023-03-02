@@ -1,3 +1,5 @@
+# vim: nofoldenable
+
 env = "lstchain-v0.9.13"
 config = "config.json"
 
@@ -87,3 +89,15 @@ rule authentication:
         "lst1-authentication.txt",
     shell:
         "echo 'Provide the file {output} as explained in README.md'"
+
+
+rule plot_moon_illumination:
+    input:
+        "build/dl1-datachecks.h5",
+        config=config,
+    output:
+        "build/moon.pdf",
+    conda:
+        env
+    shell:
+        "python scripts/plot-moon-illumination.py {input} -c {input.config} -o {output}"

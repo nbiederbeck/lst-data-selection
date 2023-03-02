@@ -11,21 +11,24 @@ rule all:
     """Docstring comment for a rule."""
     input:
         "build/runs.json",
+        "build/moon-illumination.pdf",
+        "build/cosmics.pdf",
+        "build/cosmics-above.pdf",
 
 
-rule download_runlist:
-    input:
-        "lst1-authentication.txt",
-    output:
-        "build/runlist.html",
-    conda:
-        env
-    shell:
-        "\
-        curl --user $(cat {input}) -s \
-            https://lst1.iac.es/datacheck/lstosa/LST_source_catalog.html \
-            -o {output} \
-        "
+# rule download_runlist:
+#     input:
+#         "lst1-authentication.txt",
+#     output:
+#         "build/runlist.html",
+#     conda:
+#         env
+#     shell:
+#         "\
+#         curl --user $(cat {input}) -s \
+#             https://lst1.iac.es/datacheck/lstosa/LST_source_catalog.html \
+#             -o {output} \
+#         "
 
 
 rule select_datasets:
@@ -93,13 +96,14 @@ rule authentication:
         "echo 'Provide the file {output} as explained in README.md'"
 
 
-rule plot_moon_illumination:
+rule plot:
     input:
-        "build/dl1-datachecks-masked.h5",
+        data="build/dl1-datachecks-masked.h5",
         config=config,
+        script="scripts/plot-{name}.py",
     output:
-        "build/moon.pdf",
+        "build/{name}.pdf",
     conda:
         env
     shell:
-        "python scripts/plot-moon-illumination.py {input[0]} -c {input.config} -o {output}"
+        "python {input.script} {input.data} -c {input.config} -o {output}"

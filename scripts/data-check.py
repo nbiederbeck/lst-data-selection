@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -15,11 +14,10 @@ from matplotlib import pyplot as plt
 parser = ArgumentParser()
 parser.add_argument("input_path")
 parser.add_argument("datacheck_path")
-parser.add_argument("-o", "--output_path", required=True)
+parser.add_argument("--output-runlist", required=True)
+parser.add_argument("--output-datachecks", required=True)
 parser.add_argument("-c", "--config", required=True)
 args = parser.parse_args()
-
-outdir = Path(args.output_path).parent
 
 config = Config.parse_file(args.config)
 
@@ -200,6 +198,6 @@ if __name__ == "__main__":
 
     mask = np.in1d(runs["Run ID"], runsummary["runnumber"][mask])
 
-    runs[mask].to_csv(args.output_path, index=False)
+    runs[mask].to_csv(args.output_runlist, index=False)
 
-    runsummary.write(args.datacheck_path, overwrite=True)
+    runsummary.write(args.output_datachecks, overwrite=True)

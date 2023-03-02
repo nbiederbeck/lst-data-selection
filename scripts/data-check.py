@@ -94,8 +94,12 @@ if __name__ == "__main__":
 
     mask = mask_pedestals_ok & mask_run_id & mask_time & mask_separation_low
 
-    runsummary = runsummary[mask]
-    time = time[mask]
+    runsummary["mask_run_id"] = mask_run_id
+    runsummary["mask_time"] = mask_time
+    runsummary["mask_separation_low"] = mask_separation_low
+    runsummary["mask_pedestals_ok"] = mask_pedestals_ok
+
+    runsummary["mask_run_selection"] = mask
 
     after_pedestals_run_id_time_separation = np.count_nonzero(mask)
     s = (
@@ -114,12 +118,12 @@ if __name__ == "__main__":
 
     location = EarthLocation.of_site("lapalma")
 
-    altaz = AltAz(obstime=time, location=location)
+    altaz = AltAz(obstime=time[mask], location=location)
 
-    sun = get_sun(time).transform_to(altaz)
-    moon = get_moon(time, location=location).transform_to(altaz)
+    sun = get_sun(time[mask]).transform_to(altaz)
+    moon = get_moon(time[mask], location=location).transform_to(altaz)
 
-    moon_light = moon_illumination(time)
+    moon_light = moon_illumination(time[mask])
     moon_light[moon.alt.to_value(u.deg) < 0] = 1
 
     cmap = plt.cm.afmhot
@@ -127,13 +131,14 @@ if __name__ == "__main__":
 
     ped_std = runsummary["ped_charge_stddev"]
 
-    mask_pedestal_charge = (config.pedestal_ll < ped_std) & (
-        ped_std < config.pedestal_ul
+    mask_pedestal_charge = get_mask(
+        ped_std[mask],
+        ge=config.pedestal_ll,
+        le=config.pedestal_ul,
     )
 
-    mask = mask_pedestal_charge
-    runsummary = runsummary[mask]
-    time = time[mask]
+    runsummary["mask_pedestal_charge"] = mask_pedestal_charge
+    mask = runsummary["mask_pedestal_charge"] & mask
 
     after_pedestal_charge = np.count_nonzero(mask)
     s = (
@@ -149,9 +154,9 @@ if __name__ == "__main__":
 
     mask_cosmics = get_mask(cosmics_rate, ge=config.cosmics_ll, le=config.cosmics_ul)
 
-    mask = mask_cosmics
-    runsummary = runsummary[mask]
-    time = time[mask]
+    runsummary["mask_cosmics"] = mask_cosmics
+
+    mask = runsummary["mask_cosmics"] & mask
 
     after_cosmics = np.count_nonzero(mask)
     s = (
@@ -161,12 +166,8 @@ if __name__ == "__main__":
     )
     print(s)
 
-    cosmics_rate_above10 = (
-        cosmics_rate[mask] * runsummary["cosmics_fraction_pulses_above10"]
-    )
-    cosmics_rate_above30 = (
-        cosmics_rate[mask] * runsummary["cosmics_fraction_pulses_above30"]
-    )
+    cosmics_rate_above10 = cosmics_rate * runsummary["cosmics_fraction_pulses_above10"]
+    cosmics_rate_above30 = cosmics_rate * runsummary["cosmics_fraction_pulses_above30"]
 
     mask_above10 = get_mask(
         cosmics_rate_above10,
@@ -177,9 +178,9 @@ if __name__ == "__main__":
         *bounds_std(cosmics_rate_above30, config.cosmics_30_sigma)[::-1],
     )
 
-    mask = mask_above10 & mask_above30
-    runsummary = runsummary[mask]
-    time = time[mask]
+    mask_above = mask_above10 & mask_above30
+    runsummary["mask_cosmics_above"] = mask_above
+    mask = runsummary["mask_cosmics_above"] & mask
 
     after_cosmics_above_n = np.count_nonzero(mask)
     s = (
@@ -190,13 +191,13 @@ if __name__ == "__main__":
 
     np.array(runsummary["runnumber"])
 
-    duration = u.Quantity(np.sum(runsummary["elapsed_time"]), u.s).to(u.h)
+    duration = u.Quantity(np.sum(runsummary["elapsed_time"][mask]), u.s).to(u.h)
     s = (
         f"A selected total of {len(runsummary)} runs add to a "
         f"duration of {duration:.2f} of data."
     )
     print(s)
 
-    mask = np.in1d(runs["Run ID"], runsummary["runnumber"])
+    mask = np.in1d(runs["Run ID"], runsummary["runnumber"][mask])
 
     runs[mask].to_csv(args.output_path, index=False)

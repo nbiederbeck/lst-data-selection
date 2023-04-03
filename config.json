@@ -8,12 +8,10 @@
   "cosmics_ul": 7.8e3,
   "cosmics_ll": 2.6e3,
   "cosmics_sigma": 2,
-  "cosmics_10_ul": 37.6,
-  "cosmics_10_ll": 17.7,
+  "cosmics_10_ul": 50,
+  "cosmics_10_ll": 0,
   "cosmics_10_sigma": 2,
-  "cosmics_30_ul": 5.9,
-  "cosmics_30_ll": 1.6,
-  "cosmics_30_sigma": 2,
-  "time_start": "2020-12-12",
-  "time_stop": "2022-05-24"
+  "cosmics_30_ul": 10,
+  "cosmics_30_ll": 0,
+  "cosmics_30_sigma": 2
 }

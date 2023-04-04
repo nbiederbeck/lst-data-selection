@@ -8,10 +8,10 @@
   "cosmics_ul": 7.8e3,
   "cosmics_ll": 2.6e3,
   "cosmics_sigma": 2,
-  "cosmics_10_ul": 50,
+  "cosmics_10_ul": 10000,
   "cosmics_10_ll": 0,
   "cosmics_10_sigma": 2,
-  "cosmics_30_ul": 10,
+  "cosmics_30_ul": 10000,
   "cosmics_30_ll": 0,
   "cosmics_30_sigma": 2
 }

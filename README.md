@@ -1,3 +1,5 @@
+Archived in favour of https://github.com/nbiederbeck/lst-agn-analysis
+
 # lst-data-selection
 
 Download the LST Source Catalog (runlist), replace `<username>` and `<password>`:
